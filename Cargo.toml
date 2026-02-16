@@ -4,3 +4,21 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+clap = { version = "4.5.58", features = ["derive"] }
+directories = "6.0.0"
+figment = { version = "0.10.19", features = ["env", "toml"] }
+miette = { version = "7.6.0", features = ["fancy"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+thiserror = "2.0.18"
+toml = "1.0.1"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
+tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread", "net", "io-util", "process", "time", "signal"] }
+tokio-util = { version = "0.7.18", features = ["codec"] }
+bytes = "1.11.1"
+futures-util = { version = "0.3.32", features = ["sink"] }
+regex = "1.12.3"
+reqwest = { version = "0.13.2", default-features = false, features = ["json", "rustls"] }
+sqlx = { version = "0.8.6", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
+ulid = "1.2.1"

@@ -1,0 +1,8 @@
+{
+  "name": "codelatch",
+  "description": "Remote supervision for Claude Code via Telegram",
+  "version": "0.1.0",
+  "author": {
+    "name": "codelatch"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "description": "Codelatch remote supervision hooks",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CODELATCH_BIN} hook Notification",
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CODELATCH_BIN} hook Notification",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CODELATCH_BIN} hook PostToolUseFailure",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CODELATCH_BIN} hook Stop",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CODELATCH_BIN} hook SessionStart",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CODELATCH_BIN} hook SessionEnd",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
