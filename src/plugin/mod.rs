@@ -90,12 +90,6 @@ fn build_hooks_json(binary_path: &Path) -> Value {
           "hooks": [
             { "type": "command", "command": format!("{bin} hook Notification"), "async": true }
           ]
-        },
-        {
-          "matcher": "permission_prompt",
-          "hooks": [
-            { "type": "command", "command": format!("{bin} hook Notification"), "async": true }
-          ]
         }
       ],
       "PostToolUseFailure": [

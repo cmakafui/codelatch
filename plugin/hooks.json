@@ -23,16 +23,6 @@
             "async": true
           }
         ]
-      },
-      {
-        "matcher": "permission_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CODELATCH_BIN} hook Notification",
-            "async": true
-          }
-        ]
       }
     ],
     "PostToolUseFailure": [

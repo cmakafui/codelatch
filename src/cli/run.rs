@@ -40,7 +40,8 @@ pub async fn execute(args: RunArgs) -> Result<()> {
         .rev()
         .collect::<String>();
     let session_name = format!("{repo_name}-{suffix}");
-    let tmux_session = format!("codelatch:{session_name}:{session_id}");
+    // tmux uses ':' to address session/window/pane targets, so keep names colon-free.
+    let tmux_session = format!("codelatch-{session_name}-{session_id}");
 
     let new_session_status = Command::new("tmux")
         .args(["new-session", "-d", "-s", &tmux_session, "-c"])

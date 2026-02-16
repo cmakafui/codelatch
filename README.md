@@ -7,8 +7,10 @@ Start Claude in a managed tmux session, walk away, and handle questions/approval
 ## Install
 
 ```bash
-cargo install codelatch
+cargo install --path .
 ```
+
+Use `cargo install codelatch` once the crate is published to crates.io.
 
 ## First Run
 
