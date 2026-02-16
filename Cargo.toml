@@ -19,6 +19,12 @@ tokio-util = { version = "0.7.18", features = ["codec"] }
 bytes = "1.11.1"
 futures-util = { version = "0.3.32", features = ["sink"] }
 regex = "1.12.3"
-reqwest = { version = "0.13.2", default-features = false, features = ["json", "rustls"] }
+reqwest = { version = "0.13.2", default-features = false, features = ["json", "rustls", "multipart"] }
 sqlx = { version = "0.8.6", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
 ulid = "1.2.1"
+fs4 = "0.13.1"
+backoff = "0.4.0"
+governor = "0.10.4"
+secrecy = "0.10.3"
+service-manager = "0.10.0"
+strip-ansi-escapes = "0.2.1"

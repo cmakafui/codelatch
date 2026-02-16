@@ -1,1 +1,4 @@
 /target
+*.sock
+*.pid
+*.db

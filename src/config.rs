@@ -125,6 +125,10 @@ pub fn pid_path() -> Result<PathBuf> {
     Ok(data_dir()?.join("codelatchd.pid"))
 }
 
+pub fn lock_path() -> Result<PathBuf> {
+    Ok(data_dir()?.join("codelatchd.lock"))
+}
+
 fn default_auto_deny_seconds() -> u64 {
     600
 }

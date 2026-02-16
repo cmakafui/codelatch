@@ -11,9 +11,14 @@ use crate::{
 };
 
 pub async fn execute(args: RunArgs) -> Result<()> {
-    let config = config::load()?;
+    let mut config = config::load().unwrap_or_default();
     if !config.is_configured() {
-        return Err(AppError::NotConfigured);
+        println!("First run detected. Starting guided setup...");
+        super::init::execute().await?;
+        config = config::load()?;
+        if !config.is_configured() {
+            return Err(AppError::NotConfigured);
+        }
     }
 
     ensure_tmux().await?;

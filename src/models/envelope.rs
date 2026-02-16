@@ -13,3 +13,9 @@ pub struct HookEnvelope {
     pub cwd: String,
     pub payload: Value,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HookResponseEnvelope {
+    pub request_id: String,
+    pub hook_output: Value,
+}

@@ -17,7 +17,10 @@ pub fn install_hooks(binary_path: &Path) -> Result<()> {
 
     let mut root: Value = if settings_path.exists() {
         let text = fs::read_to_string(&settings_path)?;
-        serde_json::from_str(&text).map_err(|_| AppError::PluginSettingsParse)?
+        match serde_json::from_str(&text) {
+            Ok(value) => value,
+            Err(_) => json!({}),
+        }
     } else {
         json!({})
     };
@@ -73,6 +76,14 @@ pub fn write_plugin_artifacts(binary_path: &Path) -> Result<()> {
 fn build_hooks_json(binary_path: &Path) -> Value {
     let bin = binary_path.display().to_string();
     json!({
+      "PermissionRequest": [
+        {
+          "matcher": "",
+          "hooks": [
+            { "type": "command", "command": format!("{bin} hook PermissionRequest"), "timeout": 3600 }
+          ]
+        }
+      ],
       "Notification": [
         {
           "matcher": "elicitation_dialog",

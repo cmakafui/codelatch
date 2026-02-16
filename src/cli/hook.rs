@@ -1,7 +1,7 @@
 use std::{env, io::Read};
 
 use bytes::Bytes;
-use futures_util::SinkExt;
+use futures_util::{SinkExt, StreamExt};
 use serde_json::Value;
 use tokio::net::UnixStream;
 use tokio_util::codec::{Framed, LengthDelimitedCodec};
@@ -12,7 +12,7 @@ use super::HookArgs;
 use crate::{
     config,
     errors::{AppError, Result},
-    models::envelope::HookEnvelope,
+    models::envelope::{HookEnvelope, HookResponseEnvelope},
 };
 
 pub async fn execute(args: HookArgs) -> Result<()> {
@@ -28,6 +28,7 @@ pub async fn execute(args: HookArgs) -> Result<()> {
         serde_json::from_str(&payload_text)?
     };
 
+    let blocking = args.event == "PermissionRequest";
     let session_id = env::var("CODELATCH_SESSION_ID").unwrap_or_else(|_| Ulid::new().to_string());
     let session_name =
         env::var("CODELATCH_SESSION_NAME").unwrap_or_else(|_| "unmanaged-session".to_string());
@@ -41,17 +42,35 @@ pub async fn execute(args: HookArgs) -> Result<()> {
         session_name,
         tmux_pane,
         hook_event_name: args.event,
-        blocking: false,
+        blocking,
         cwd,
         payload,
     };
 
-    let stream = UnixStream::connect(&config.socket_path)
-        .await
-        .map_err(|_| AppError::DaemonUnavailable)?;
+    let stream = match UnixStream::connect(&config.socket_path).await {
+        Ok(stream) => stream,
+        Err(_) if blocking => {
+            eprintln!("Codelatch daemon unavailable — denied for safety");
+            std::process::exit(2);
+        }
+        Err(_) => return Err(AppError::DaemonUnavailable),
+    };
+
     let mut framed = Framed::new(stream, LengthDelimitedCodec::new());
     let payload = serde_json::to_vec(&envelope)?;
     framed.send(Bytes::from(payload)).await?;
+
+    if blocking {
+        let Some(frame) = framed.next().await else {
+            eprintln!("Codelatch daemon closed permission channel — denied for safety");
+            std::process::exit(2);
+        };
+        let bytes = frame?;
+        let response: HookResponseEnvelope = serde_json::from_slice(&bytes)?;
+        let output = serde_json::to_string(&response.hook_output)?;
+        println!("{output}");
+        return Ok(());
+    }
 
     info!(
         event = %envelope.hook_event_name,

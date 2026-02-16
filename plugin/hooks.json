@@ -1,6 +1,18 @@
 {
   "description": "Codelatch remote supervision hooks",
   "hooks": {
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CODELATCH_BIN} hook PermissionRequest",
+            "timeout": 3600
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "elicitation_dialog",

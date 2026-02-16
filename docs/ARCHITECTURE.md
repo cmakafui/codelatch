@@ -143,7 +143,7 @@ graph TB
 | **Telegram Transport** | Long-polls `getUpdates` on the Telegram Bot API. Sends messages via `sendMessage` with `InlineKeyboardMarkup`. Edits messages in-place via `editMessageText` after decisions. Handles `CallbackQuery` for button taps and `answerCallbackQuery` acknowledgements. |
 | **tmux Control Plane** | Manages session lifecycle. Injects replies via `tmux send-keys -t <pane>`. Captures context via `tmux capture-pane -p -t <pane>`. Runs `git diff` in session `cwd` for `/diff`. |
 | **SQLite Store** | Durable state for sessions and in-flight requests. Survives daemon restarts. Enforces idempotent state transitions on pending approvals. |
-| **Redaction Pipeline** | Regex-based scrubbing of secrets (tokens, JWT, PEM blocks, `.env` values) before any content leaves the machine to Telegram. |
+| **Redaction Pipeline** | Terminal output is normalized first (`strip-ansi-escapes` + control-character cleanup), then secrets are scrubbed (tokens, JWT, PEM blocks, `.env` values) before content is formatted for Telegram. |
 | **Timeout Manager** | Tracks `expires_at` for pending permission requests. Fires auto-deny when the countdown elapses. Updates the Telegram message to show "⏳ Timed out — denied." |
 
 #### Hardening

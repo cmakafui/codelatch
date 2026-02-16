@@ -2,6 +2,7 @@ mod doctor;
 mod hook;
 mod init;
 mod run;
+mod service;
 mod sessions;
 mod start;
 mod status;
@@ -30,9 +31,10 @@ pub enum Command {
     Start(StartArgs),
     Stop,
     Status,
-    Doctor,
+    Doctor(DoctorArgs),
     Hook(HookArgs),
     Sessions,
+    Service(ServiceArgs),
 }
 
 #[derive(Debug, Args, Default, Clone)]
@@ -56,6 +58,25 @@ pub struct StartArgs {
     pub foreground: bool,
 }
 
+#[derive(Debug, Args, Clone, Default)]
+pub struct DoctorArgs {
+    #[arg(long, default_value_t = false)]
+    pub fix: bool,
+}
+
+#[derive(Debug, Args, Clone)]
+pub struct ServiceArgs {
+    #[command(subcommand)]
+    pub command: ServiceCommand,
+}
+
+#[derive(Debug, Subcommand, Clone)]
+pub enum ServiceCommand {
+    Install,
+    Uninstall,
+    Status,
+}
+
 pub async fn dispatch() -> Result<()> {
     let cli = Cli::parse();
     match cli.command.unwrap_or(Command::Run(RunArgs::default())) {
@@ -64,9 +85,10 @@ pub async fn dispatch() -> Result<()> {
         Command::Start(args) => start::execute(args).await?,
         Command::Stop => stop::execute().await?,
         Command::Status => status::execute().await?,
-        Command::Doctor => doctor::execute().await?,
+        Command::Doctor(args) => doctor::execute(args).await?,
         Command::Hook(args) => hook::execute(args).await?,
         Command::Sessions => sessions::execute().await?,
+        Command::Service(args) => service::execute(args).await?,
     }
     info!("command completed");
     Ok(())

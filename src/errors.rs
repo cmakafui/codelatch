@@ -50,6 +50,17 @@ pub enum AppError {
     )]
     DaemonStartupTimeout,
 
+    #[error("daemon already running")]
+    #[diagnostic(
+        code(codelatch::daemon::already_running),
+        help("Use `codelatch status` to inspect current daemon state.")
+    )]
+    DaemonAlreadyRunning,
+
+    #[error("failed to acquire daemon singleton lock: {0}")]
+    #[diagnostic(code(codelatch::daemon::lock))]
+    DaemonLock(String),
+
     #[error("tmux is not available")]
     #[diagnostic(code(codelatch::tmux::missing), help("Install tmux and retry."))]
     TmuxMissing,
@@ -84,6 +95,14 @@ pub enum AppError {
     #[error("failed to parse existing Claude settings JSON")]
     #[diagnostic(code(codelatch::plugin::settings_parse))]
     PluginSettingsParse,
+
+    #[error("doctor check failed: {0}")]
+    #[diagnostic(code(codelatch::doctor::unhealthy))]
+    DoctorUnhealthy(String),
+
+    #[error("service manager error: {0}")]
+    #[diagnostic(code(codelatch::service::manager))]
+    ServiceManager(String),
 
     #[error(transparent)]
     Io(#[from] std::io::Error),

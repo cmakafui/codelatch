@@ -14,19 +14,21 @@ pub async fn execute() -> Result<()> {
         return Err(AppError::NotConfigured);
     }
 
-    println!("✅ Configured");
-    println!("✅ Telegram credentials present");
+    let mut ready = true;
+    println!("Status:");
 
     let hooks_ok = plugin::hooks_installed()?;
     if hooks_ok {
         println!("✅ Hooks installed");
     } else {
-        println!("⚠️ Hooks not installed (run `codelatch init`)");
+        ready = false;
+        println!("⚠️ Hooks not installed");
     }
 
     if UnixStream::connect(&config.socket_path).await.is_ok() {
         println!("✅ Daemon socket reachable");
     } else {
+        ready = false;
         println!("⚠️ Daemon socket unreachable ({})", config.socket_path);
     }
 
@@ -35,6 +37,7 @@ pub async fn execute() -> Result<()> {
         let pid_text = fs::read_to_string(&pid_path).unwrap_or_else(|_| "<unknown>".to_string());
         println!("✅ PID file present ({})", pid_text.trim());
     } else {
+        ready = false;
         println!("⚠️ PID file missing ({})", pid_path.display());
     }
 
@@ -48,7 +51,22 @@ pub async fn execute() -> Result<()> {
     if tmux_ok {
         println!("✅ tmux available");
     } else {
+        ready = false;
         println!("⚠️ tmux not available");
+    }
+
+    match crate::daemon::get_bot_username(config.token()?).await {
+        Ok(username) => println!("✅ Telegram auth ok (@{username})"),
+        Err(_) => {
+            ready = false;
+            println!("⚠️ Telegram auth failed");
+        }
+    }
+
+    if ready {
+        println!("✅ Ready");
+    } else {
+        println!("⚠️ Not ready (run `codelatch doctor --fix`)");
     }
 
     Ok(())

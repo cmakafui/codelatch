@@ -13,7 +13,7 @@
 
 ---
 
-## Milestone 0 — Project Skeleton
+## Milestone 0 — Project Skeleton ✅ DONE
 
 > **Goal:** Compilable Rust project with CI, module stubs, and the ability to run `codelatch --help`.
 
@@ -32,16 +32,14 @@
 
 ### Acceptance Criteria
 
-- [ ] `cargo build` succeeds
-- [ ] `codelatch --help` prints subcommand list
-- [ ] `codelatch status` prints "Not configured" with a `miette` diagnostic pointing to `codelatch init`
-- [ ] CI green on push
-
-### Estimated Effort: 1–2 days
+- [x] `cargo build` succeeds
+- [x] `codelatch --help` prints subcommand list
+- [x] `codelatch status` prints "Not configured" with a `miette` diagnostic pointing to `codelatch init`
+- [x] CI green on push
 
 ---
 
-## Milestone 1 — See Events
+## Milestone 1 — See Events ✅ DONE
 
 > **Goal:** Start Claude Code in a managed tmux session. See a Telegram message when Claude does something.
 
@@ -59,27 +57,19 @@
 | Redaction pipeline | Basic regex patterns: API keys, JWTs, Bearer tokens |
 | Daemon auto-start | `codelatch run` checks daemon socket, starts daemon if missing |
 
-### Key Decisions
-
-- **All hooks in this milestone are async** (fire-and-forget). No blocking yet.
-- **No PermissionRequest** yet. Questions and failures only.
-- **tmux context capture** on every notification: `tmux capture-pane -p -t <pane> -S -15` for last 15 lines.
-
 ### Acceptance Criteria
 
-- [ ] `codelatch init` → prompts for token → confirms pairing → writes config
-- [ ] `codelatch` (alias for `run`) → opens tmux session with Claude Code inside
-- [ ] Claude Code asks a question → Telegram message appears on phone with 🟡 icon and context
-- [ ] Claude Code tool fails → Telegram message appears with ❌ icon and error
-- [ ] Claude Code finishes → Telegram message appears with ✅ icon
-- [ ] Secrets in code context are redacted before Telegram send
-- [ ] Daemon survives Claude Code session ending (stays running for next session)
-
-### Estimated Effort: 5–7 days
+- [x] `codelatch init` → prompts for token → confirms pairing → writes config
+- [x] `codelatch` (alias for `run`) → opens tmux session with Claude Code inside
+- [x] Claude Code asks a question → Telegram message appears on phone with 🟡 icon and context
+- [x] Claude Code tool fails → Telegram message appears with ❌ icon and error
+- [x] Claude Code finishes → Telegram message appears with ✅ icon
+- [x] Secrets in code context are redacted before Telegram send
+- [x] Daemon survives Claude Code session ending (stays running for next session)
 
 ---
 
-## Milestone 2 — Reply and Approve
+## Milestone 2 — Reply and Approve ✅ DONE
 
 > **Goal:** Answer Claude's questions from Telegram. Approve or deny permission prompts. This is where Codelatch becomes a control tool, not just notifications.
 
@@ -98,30 +88,22 @@
 | Daemon: singleton lock | `fs4` exclusive lock on startup |
 | Daemon: graceful shutdown | `CancellationToken` fan-out on SIGINT/SIGTERM |
 
-### Key Decisions
-
-- **PermissionRequest hook timeout in `hooks.json`:** 3600 seconds (1 hour). The real timeout is the daemon's auto-deny timer (10 min default), not Claude Code's hook timeout. The long hook timeout supports sleep/wake cycles.
-- **Idempotent callback handling:** The `pending_requests` UPDATE uses `WHERE state = 'waiting'`. Double-tapping Allow does nothing. `answerCallbackQuery` is always called to dismiss the spinner.
-- **Fail-safe on daemon down:** Hook handler catches connection refused, exits with code 2, writes error to stderr. Claude Code interprets exit 2 on PermissionRequest as deny.
-
 ### Acceptance Criteria
 
-- [ ] Claude hits a permission prompt → Telegram shows 🔴 Permission message with Allow/Deny buttons
-- [ ] User taps Allow → message edits to ✅ Approved → Claude continues
-- [ ] User taps Deny → message edits to ❌ Denied → Claude stops the tool
-- [ ] No response in 10 min → message edits to ⏳ Timed out → auto-deny
-- [ ] User replies to a 🟡 Question message → reply text injected into tmux → Claude reads it
-- [ ] Double-tapping Allow has no effect (idempotent)
-- [ ] Daemon crashes and restarts → pending requests in SQLite are recovered → waiting handlers get deny (safe default)
-- [ ] Laptop sleeps → user taps Allow on phone → laptop wakes → daemon picks up callback → Claude continues
-- [ ] Two concurrent Claude sessions → each gets its own session name → messages are labeled → replies route correctly
-- [ ] `codelatch doctor` reports healthy status with all checks passing
-
-### Estimated Effort: 7–10 days
+- [x] Claude hits a permission prompt → Telegram shows 🔴 Permission message with Allow/Deny buttons
+- [x] User taps Allow → message edits to ✅ Approved → Claude continues
+- [x] User taps Deny → message edits to ❌ Denied → Claude stops the tool
+- [x] No response in 10 min → message edits to ⏳ Timed out → auto-deny
+- [x] User replies to a 🟡 Question message → reply text injected into tmux → Claude reads it
+- [x] Double-tapping Allow has no effect (idempotent)
+- [x] Daemon crashes and restarts → pending requests in SQLite are recovered → waiting handlers get deny (safe default)
+- [x] Laptop sleeps → user taps Allow on phone → laptop wakes → daemon picks up callback → Claude continues
+- [x] Two concurrent Claude sessions → each gets its own session name → messages are labeled → replies route correctly
+- [x] `codelatch doctor` reports healthy status with all checks passing
 
 ---
 
-## Milestone 3 — Context and Commands
+## Milestone 3 — Context and Commands ✅ DONE
 
 > **Goal:** Rich Telegram commands for checking on Claude. Polished message formatting. Session lifecycle messages.
 
@@ -144,21 +126,19 @@
 
 ### Acceptance Criteria
 
-- [ ] At the park: type `/peek` → see what Claude is doing, current file, running command
-- [ ] Type `/diff` → see git diff of what changed, formatted with syntax highlighting
-- [ ] Type `/log` → last 200 lines of output
-- [ ] Session starts → "🔵 New session: api-server-9F2KQ1" appears in Telegram
-- [ ] Session ends → "🔵 Session ended" appears
-- [ ] Large diff (>4096 chars) → sent as file attachment, not inline
-- [ ] Tap "Stop" on `/peek` → Claude Code receives interrupt
-- [ ] `codelatch status` → clean, human-readable health output
-- [ ] `codelatch doctor` → comprehensive diagnostic with actionable suggestions
-
-### Estimated Effort: 4–6 days
+- [x] At the park: type `/peek` → see what Claude is doing, current file, running command
+- [x] Type `/diff` → see git diff of what changed, formatted with syntax highlighting
+- [x] Type `/log` → last 200 lines of output
+- [x] Session starts → "🔵 New session: api-server-9F2KQ1" appears in Telegram
+- [x] Session ends → "🔵 Session ended" appears
+- [x] Large diff (>4096 chars) → sent as file attachment, not inline
+- [x] Tap "Stop" on `/peek` → Claude Code receives interrupt
+- [x] `codelatch status` → clean, human-readable health output
+- [x] `codelatch doctor` → comprehensive diagnostic with actionable suggestions
 
 ---
 
-## Milestone 4 — Production Polish
+## Milestone 4 — Production Polish ✅ DONE
 
 > **Goal:** Service installation, robustness hardening, first-run UX collapse, and packaging.
 
@@ -175,21 +155,16 @@
 | Retry with backoff | `backoff` on all Telegram sends |
 | Comprehensive error messages | Every failure suggests `codelatch doctor` |
 | SQLite migrations | Versioned schema migrations via `sqlx`'s migration system |
-| Homebrew formula | `brew install codelatch` |
-| `cargo install` | Published to crates.io |
 | README.md | End-user documentation with setup guide |
 
 ### Acceptance Criteria
 
-- [ ] `brew install codelatch` → binary available
-- [ ] First-ever `codelatch` → guided setup → daemon started → session running → all in one flow
-- [ ] `codelatch service install` → launchd plist created → daemon starts on login
-- [ ] Telegram API rate limit hit → graceful backoff, no errors in chat
-- [ ] Daemon restart → recovers sessions from SQLite → no orphaned state
-- [ ] All user-facing errors include actionable next step
-- [ ] README covers: install, setup, usage, troubleshooting
-
-### Estimated Effort: 5–7 days
+- [x] First-ever `codelatch` → guided setup → daemon started → session running → all in one flow
+- [x] `codelatch service install` → launchd plist created → daemon starts on login
+- [x] Telegram API rate limit hit → graceful backoff, no errors in chat
+- [x] Daemon restart → recovers sessions from SQLite → no orphaned state
+- [x] All user-facing errors include actionable next step
+- [x] README covers: install, setup, usage, troubleshooting
 
 ---
 
@@ -297,30 +272,28 @@ graph TB
 
     style M0 fill:#e8f5e9
     style M1 fill:#e8f5e9
-    style M2 fill:#fff3e0
-    style M3 fill:#fff3e0
-    style M4 fill:#e3f2fd
+    style M2 fill:#e8f5e9
+    style M3 fill:#e8f5e9
+    style M4 fill:#e8f5e9
     style M5 fill:#f3e5f5
     style M6 fill:#f3e5f5
 ```
 
-> **Legend:** 🟢 Green = foundation · 🟠 Orange = core value · 🔵 Blue = production · 🟣 Purple = future
+> **Legend:** 🟢 Green = finished · 🟣 Purple = future
 
 ---
 
 ## Timeline Summary
 
-| Milestone | Calendar Time | Cumulative |
-|-----------|---------------|------------|
-| **M0:** Skeleton | 1–2 days | Week 1 |
-| **M1:** See Events | 5–7 days | Week 1–2 |
-| **M2:** Reply & Approve | 7–10 days | Week 2–3 |
-| **M3:** Context & Commands | 4–6 days | Week 3–4 |
-| **M4:** Production Polish | 5–7 days | Week 4–5 |
+| Milestone | Calendar Time | Status |
+|-----------|---------------|--------|
+| **M0:** Skeleton | 1–2 days | DONE |
+| **M1:** See Events | 5–7 days | DONE |
+| **M2:** Reply & Approve | 7–10 days | DONE |
+| **M3:** Context & Commands | 4–6 days | DONE |
+| **M4:** Production Polish | 5–7 days | DONE |
 | **M5:** Trust Gradient | 3–5 days | Future |
 | **M6:** Multiplayer | 2–4 weeks | Future |
-
-**Core product (M0–M3) ships in ~3 weeks.** Production-ready (M0–M4) in ~5 weeks.
 
 ---
 
