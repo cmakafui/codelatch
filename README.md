@@ -49,6 +49,8 @@ codelatch service uninstall
 
 ## Telegram Commands
 
+Only Codelatch-managed sessions are forwarded to Telegram. Unmanaged/local Claude sessions are ignored.
+
 - `/peek` - current task, running command, recent terminal output, and inline actions
 - `/diff` - current git diff (as inline text or patch attachment)
 - `/log` - last 200 lines of tmux output as attachment

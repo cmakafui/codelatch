@@ -29,9 +29,17 @@ pub async fn execute(args: HookArgs) -> Result<()> {
     };
 
     let blocking = args.event == "PermissionRequest";
-    let session_id = env::var("CODELATCH_SESSION_ID").unwrap_or_else(|_| Ulid::new().to_string());
-    let session_name =
-        env::var("CODELATCH_SESSION_NAME").unwrap_or_else(|_| "unmanaged-session".to_string());
+    let managed_session_id = env::var("CODELATCH_SESSION_ID").ok();
+    let managed_session_name = env::var("CODELATCH_SESSION_NAME").ok();
+
+    // Hooks are installed globally; skip async events from non-codelatch sessions
+    // to avoid noisy "unmanaged-session" lifecycle messages in Telegram.
+    if !blocking && (managed_session_id.is_none() || managed_session_name.is_none()) {
+        return Ok(());
+    }
+
+    let session_id = managed_session_id.unwrap_or_else(|| Ulid::new().to_string());
+    let session_name = managed_session_name.unwrap_or_else(|| "unmanaged-session".to_string());
     let tmux_pane = env::var("TMUX_PANE").ok();
     let cwd = env::current_dir()?.display().to_string();
 
