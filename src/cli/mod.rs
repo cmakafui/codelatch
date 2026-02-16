@@ -41,6 +41,8 @@ pub enum Command {
 pub struct RunArgs {
     #[arg(long, default_value_t = false)]
     pub no_attach: bool,
+    #[arg(long, default_value_t = false)]
+    pub keep_session: bool,
     #[arg(last = true, trailing_var_arg = true)]
     pub claude_args: Vec<String>,
 }

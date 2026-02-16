@@ -32,6 +32,9 @@ On first run, Codelatch will:
 # launch managed Claude session (default command)
 codelatch
 
+# keep tmux session alive after Claude exits
+codelatch --keep-session
+
 # daemon health
 codelatch status
 codelatch doctor

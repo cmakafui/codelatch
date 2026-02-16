@@ -43,17 +43,6 @@ pub async fn execute(args: RunArgs) -> Result<()> {
     // tmux uses ':' to address session/window/pane targets, so keep names colon-free.
     let tmux_session = format!("codelatch-{session_name}-{session_id}");
 
-    let new_session_status = Command::new("tmux")
-        .args(["new-session", "-d", "-s", &tmux_session, "-c"])
-        .arg(&cwd)
-        .status()
-        .await?;
-    if !new_session_status.success() {
-        return Err(AppError::TmuxFailed(
-            "unable to create tmux session".to_string(),
-        ));
-    }
-
     let launch_command = format!(
         "CODELATCH_SESSION_ID={} CODELATCH_SESSION_NAME={} CODELATCH_SOCKET={} {}",
         shell_quote(&session_id),
@@ -61,15 +50,40 @@ pub async fn execute(args: RunArgs) -> Result<()> {
         shell_quote(&config.socket_path),
         build_claude_command(&args.claude_args)
     );
+    if args.keep_session {
+        let new_session_status = Command::new("tmux")
+            .args(["new-session", "-d", "-s", &tmux_session, "-c"])
+            .arg(&cwd)
+            .status()
+            .await?;
+        if !new_session_status.success() {
+            return Err(AppError::TmuxFailed(
+                "unable to create tmux session".to_string(),
+            ));
+        }
 
-    let send_status = Command::new("tmux")
-        .args(["send-keys", "-t", &tmux_session, &launch_command, "C-m"])
-        .status()
-        .await?;
-    if !send_status.success() {
-        return Err(AppError::TmuxFailed(
-            "unable to inject Claude launch command".to_string(),
-        ));
+        let send_status = Command::new("tmux")
+            .args(["send-keys", "-t", &tmux_session, &launch_command, "C-m"])
+            .status()
+            .await?;
+        if !send_status.success() {
+            return Err(AppError::TmuxFailed(
+                "unable to inject Claude launch command".to_string(),
+            ));
+        }
+    } else {
+        // Launch Claude as the pane command so tmux exits when Claude exits.
+        let new_session_status = Command::new("tmux")
+            .args(["new-session", "-d", "-s", &tmux_session, "-c"])
+            .arg(&cwd)
+            .arg(&launch_command)
+            .status()
+            .await?;
+        if !new_session_status.success() {
+            return Err(AppError::TmuxFailed(
+                "unable to create tmux session with Claude command".to_string(),
+            ));
+        }
     }
 
     info!(session_id = %session_id, session_name = %session_name, "started managed session");
